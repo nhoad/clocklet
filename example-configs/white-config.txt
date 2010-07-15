@@ -1,0 +1,45 @@
+# -*- coding: ASCII -*-
+#
+#	the default configuration for pyClock.
+#
+#	color: the color you want your text to be.
+#	alpha: level of transparency, 0-255
+#	caps: convert all text to capital letters or leave as is
+#	displays: the real meat of the applet, it's a tuple of maps, here are the expected values in each map:
+#		format: the time text you want to display (man strftime for details)
+#		x_pos: the x co-ord you want to draw the text at.
+#		y_pos: the y co-ord you want to draw the text at.
+#		font: the font to use for the formatted time.
+#	
+#	please note that the x_pos and y_pos variables can be strings you wish to evaluate, or simply numbers.
+#	(strings are nice to evaluate as you can do functions, to adjust for width changes and the like)
+#	
+id0 = {'alpha': 255,
+ 'caps': True,
+ 'color': '#FFFFFF',
+ 'displays': ({'font': 'PixelFont/75',
+               'format': '%l:%M',
+               'x_pos': 0,
+               'y_pos': 0},
+              {'font': 'PixelFont/20',
+               'format': '%a',
+               'x_pos': "text_width(large_text, get_time('%l:%M'))",
+               'y_pos': 5},
+              {'font': 'PixelFont/20',
+               'format': '%b',
+               'x_pos': "text_width(large_text, get_time('%l:%M'))",
+               'y_pos': "text_height(medium_text, get_time('%a')) + 4"},
+              {'font': 'PixelFont/30',
+               'format': '%d',
+               'x_pos': "text_width(large_text, get_time('%l:%M'))",
+               'y_pos': "(text_height(medium_text, get_time('%a')) * 2) + 1"},
+              {'font': 'PixelFont/15',
+               'format': '%Y',
+               'x_pos': "text_width(large_text, get_time('%l:%M'))",
+               'y_pos': "(text_height(medium_text, get_time('%a')) * 2 + text_height(date_text, '%d')) - 2"},
+              {'font': 'PixelFont/15',
+               'format': '%p',
+               'x_pos': "text_width(large_text, get_time('%l:%M')) - text_width(year_text, get_time('%p')) - 2",
+               'y_pos': "(text_height(medium_text, get_time('%a')) * 2 + text_height(date_text, get_time('%d'))) - 2"}),
+ 'height': 120,
+ 'width': 290}
