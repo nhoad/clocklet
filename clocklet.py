@@ -1,8 +1,11 @@
 #!/usr/bin/python
-# Clock widget for use with adesklets. Can be used to mimic various clocks.
-# Clock ripoff of a similar program by a large company.
-# Version: 2.0
-# 11th June 2010 Update: Large section of code, including Config, was changed to be much configurable
+'''
+File: clocklet.py
+Author: Nathan Hoad
+Description: Clocklet is a plugin used in conjunction with adesklets to 
+             provide an easily configurable clock widget for your desktop.
+Original Date Written: Sometime early 2010, around February-March.
+'''
 
 import time
 import sys

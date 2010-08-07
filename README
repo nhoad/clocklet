@@ -1,0 +1,41 @@
+clocklet
+
+Dependencies:
+-------------
+Python 2.6, at least
+adesklets
+
+General:
+--------
+clocklet is a configurable desktop widget for displaying the time, 
+however you want.
+
+I wrote it after seeing a few date/time widgets in different widget programs
+that weren't quite up to what I expected. Hopefully it satisfies your needs.
+
+Installation:
+-------------
+
+Simply run the program with python, i.e. "python clocklet.py", it will ask 
+if you want to register or test the torrent. I recommend testing it first 
+to make sure it does what you want. If it does, run it again and choose register.
+
+Configuration:
+--------------
+
+Configuration is done via the config.txt file. Example configs are included in the 
+example-configs folder. It's quite straight-forward in my opinion, but I'll do a 
+rundown on the options.
+
+alpha    - level of transparency, 0-255.
+caps     - capitalise all text or not.
+color    - the color you want your text to be.
+displays - displays is a tuple of maps. The basic map layout is this:
+   font     - the font to use for this specific display. Layout should be NAME/SIZE.
+   format   - The text to display. E.g. "%M" will display minutes.
+   x_pos    - X co-ord to display the above format text at. Can be either a string 
+              or a hard coded number.
+   y_pos    - same deal as x_pos, but for Y co-ord.
+
+height   - height of the widget.
+width    - width of the widget.
