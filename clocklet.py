@@ -2,7 +2,7 @@
 '''
 File: clocklet.py
 Author: Nathan Hoad
-Description: Clocklet is a plugin used in conjunction with adesklets to 
+Description: Clocklet is a plugin used in conjunction with adesklets to
              provide an easily configurable clock widget for your desktop.
 Original Date Written: Sometime early 2010, around February-March.
 '''
@@ -18,27 +18,32 @@ medium_text = 'PixelFont/20'
 date_text = 'PixelFont/30'
 year_text = 'PixelFont/15'
 
+
 def get_time(format_text):
     """
     Returns time using format_text as formatter. man strftime for details
     """
     return time.strftime(format_text, time.localtime(time.time()))
 
-def text_width(font, text):
-    """Returns the width of text using font, in imlib2"""
+
+def text_size(font, text):
+    """Gets the height and width of text using font, in imlib2"""
     font_num = adesklets.load_font(font)
     adesklets.context_set_font(font_num)
-    width = adesklets.get_text_size(text)[0]
+    width, height = adesklets.get_text_size(text)
     adesklets.free_font(font_num)
-    return width
+    return width, height
+
+
+def text_width(font, text):
+    """Returns the width of text using font, in imlib2"""
+    return text_size(font, text)[0]
+
 
 def text_height(font, text):
     """Returns the height of text using font, in imlib2"""
-    font_num = adesklets.load_font(font)
-    adesklets.context_set_font(font_num)
-    height = adesklets.get_text_size(text)[1]
-    adesklets.free_font(font_num)
-    return height
+    return text_size(font, text)[1]
+
 
 class Config(adesklets.ConfigFile):
     """
@@ -47,50 +52,67 @@ class Config(adesklets.ConfigFile):
     color: the color you want your text to be.
     alpha: level of transparency, 0-255
     caps: convert all text to capital letters or leave as is
-    displays: the real meat of the applet, it's a tuple of maps, here are the expected values in each map:
+    displays: the real meat of the applet, it's a tuple of
+              maps, here are the expected values in each map:
         format: the time text you want to display (man strftime for details)
         x_pos: the x co-ord you want to draw the text at.
         y_pos: the y co-ord you want to draw the text at.
         font: the font to use for the formatted time.
-    
-    please note that the x_pos and y_pos variables can be strings you wish to evaluate, or simply numbers.
-    (strings are nice to evaluate as you can do functions, to adjust for width changes and the like)
+
+    please note that the x_pos and y_pos variables can be strings you wish
+    to evaluate, or simply numbers. (strings are nice to evaluate as you
+    can do functions, to adjust for width changes and the like)
     """
-    cfg_default={
-            'color'         : '#FFFFFF',
-            'alpha'            : 255,
-            'caps'            : True,
-            'width'            : 290,
-            'height'            : 120,
-            'displays'        : ( 
-            { 'format' : '%l:%M',
-                'x_pos'    : 0,
-                'y_pos'    : 0, 
-                'font'    : large_text}, 
-            { 'format' : '%a',
-                'x_pos'    : "text_width(large_text, get_time('%l:%M'))",
-                'y_pos'    : 5, 
-                'font'    : medium_text},
-            { 'format' : '%b',
-                'x_pos'    : "text_width(large_text, get_time('%l:%M'))",
-                'y_pos'    : "text_height(medium_text, get_time('%a')) + 4",
-                'font'    : medium_text},
-            { 'format' : '%d',
-                'x_pos'    : "text_width(large_text, get_time('%l:%M'))",
-                'y_pos'    : "(text_height(medium_text, get_time('%a')) * 2) + 1",
-                'font'    : date_text },
-            { 'format' : '%Y',
-                'x_pos'    : "text_width(large_text, get_time('%l:%M'))",
-                'y_pos'    : "(text_height(medium_text, get_time('%a')) * 2 + text_height(date_text, '%d')) - 2",
-                'font'    : year_text },
-            { 'format' : '%p',
-                'x_pos'    : "text_width(large_text, get_time('%l:%M')) - text_width(year_text, get_time('%p')) - 2",
-                'y_pos'    : "(text_height(medium_text, get_time('%a')) * 2 + text_height(date_text, get_time('%d'))) - 2",
-                'font'    : year_text },
-                )
-        }
+    y_y = "(text_height(medium_text, get_time('%a')) * 2"\
+        + " + text_height(date_text, '%d')) - 2"
+
+    p_x = "text_width(large_text, get_time('%l:%M')) - "\
+        + "text_width(year_text, get_time('%p')) - 2",
+    p_y = "(text_height(medium_text, get_time('%a')) * 2 + "\
+        + "text_height(date_text, get_time('%d'))) - 2",
+
+    cfg_default = {
+            'color': '#FFFFFF',
+            'alpha': 255,
+            'caps': True,
+            'width': 290,
+            'height': 120,
+            'displays': (
+            {'format': '%l:%M',
+                'x_pos': 0,
+                'y_pos': 0,
+                'font': large_text},
+            {'format': '%a',
+                'x_pos': "text_width(large_text, get_time('%l:%M'))",
+                'y_pos': 5,
+                'font': medium_text},
+            {'format': '%b',
+                'x_pos': "text_width(large_text, get_time('%l:%M'))",
+                'y_pos': "text_height(medium_text, get_time('%a')) + 4",
+                'font': medium_text},
+            {'format': '%d',
+                'x_pos': "text_width(large_text, get_time('%l:%M'))",
+                'y_pos': "(text_height(medium_text, get_time('%a')) * 2) + 1",
+                'font': date_text},
+            {'format': '%Y',
+                'x_pos': "text_width(large_text, get_time('%l:%M'))",
+                'y_pos': y_y,
+                'font': year_text},
+            {'format': '%p',
+                'x_pos': p_x,
+                'y_pos': p_y,
+                'font': year_text},)}
+
 
 class Clocklet(adesklets.Events_handler):
+
+    def __init__(self, basedir):
+        if len(basedir) == 0:
+            self.basedir = '.'
+        else:
+            self.basedir = basedir
+        adesklets.Events_handler.__init__(self)
+
     def _refresh_buffer(self):
         """
         Makes a nice clean buffer to use
@@ -111,7 +133,8 @@ class Clocklet(adesklets.Events_handler):
 
         adesklets.context_set_image(0)
         adesklets.context_set_blend(False)
-        adesklets.blend_image_onto_image(self.buffer,1,0,0,buf_x,buf_y,0,0,buf_x,buf_y)
+        adesklets.blend_image_onto_image(self.buffer, 1, 0, 0, buf_x, buf_y, \
+            0, 0, buf_x, buf_y)
         adesklets.context_set_blend(True)
 
     def _draw_time(self):
@@ -145,14 +168,6 @@ class Clocklet(adesklets.Events_handler):
             adesklets.text_draw(x_pos, y_pos, text)
             adesklets.free_font(cur_font)
 
-
-    def __init__(self, basedir):
-        if len(basedir) == 0:
-            self.basedir = '.'
-        else:
-            self.basedir = basedir
-        adesklets.Events_handler.__init__(self)
-
     def __del__(self):
         """
         To be called on deletion
@@ -169,10 +184,11 @@ class Clocklet(adesklets.Events_handler):
         self.buffer = None
         self._get_config()
 
-        adesklets.context_set_color(self.red, self.green, self.blue, self.alpha)
+        adesklets.context_set_color(self.red, self.green,\
+            self.blue, self.alpha)
 
         adesklets.context_set_anti_alias(True)
-        adesklets.window_resize(self.sizeX,self.sizeY)
+        adesklets.window_resize(self.sizeX, self.sizeY)
         adesklets.window_set_transparency(True)
         adesklets.window_show()
 
@@ -182,7 +198,7 @@ class Clocklet(adesklets.Events_handler):
         """
         if self.config is None:
                 self.config = Config(adesklets.get_id(),
-                        join(self.basedir,'config.txt'))
+                        join(self.basedir, 'config.txt'))
 
         config = self.config
         color = config.get('color')
@@ -203,10 +219,11 @@ class Clocklet(adesklets.Events_handler):
         return 58 # refresh every 58 seconds to allow for program slowness
 
     def _parse_color(self, color):
-        """ 
+        """
         Parse an HTML-style hexadecimal color value into respective decimal RGB
         values.
         """
+
         def hex_color_to_int(color):
             return eval('0x%s' % color)
 
