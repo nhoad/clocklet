@@ -152,8 +152,9 @@ class Clocklet(adesklets.Events_handler):
             s_y_pos = display['y_pos']
 
             x_pos = eval(s_x_pos) if isinstance(s_x_pos, str) else s_x_pos
+            y_pos = eval(s_y_pos) if isinstance(s_y_pos, str) else s_y_pos
 
-            y_pos = eval(s_y_pos) if isinstance(s_y_pos, str) else s_x_pos
+            print text
 
             # sure this is gross and dumb, but it's easier.
             cur_font = adesklets.load_font(display['font'])
