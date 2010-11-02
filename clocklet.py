@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 '''
 File: clocklet.py
 Author: Nathan Hoad
@@ -17,7 +17,6 @@ large_text = 'PixelFont/75'
 medium_text = 'PixelFont/20'
 date_text = 'PixelFont/30'
 year_text = 'PixelFont/15'
-
 
 def get_time(format_text):
     """
@@ -152,9 +151,9 @@ class Clocklet(adesklets.Events_handler):
             s_x_pos = display['x_pos']
             s_y_pos = display['y_pos']
 
-            xpos = eval(s_x_pos) if isinstance(s_x_pos, str) else s_x_pos
+            x_pos = eval(s_x_pos) if isinstance(s_x_pos, str) else s_x_pos
 
-            y_pox = eval(s_y_pos) if isinstance(s_y_pos, str) else s_x_pos
+            y_pos = eval(s_y_pos) if isinstance(s_y_pos, str) else s_x_pos
 
             # sure this is gross and dumb, but it's easier.
             cur_font = adesklets.load_font(display['font'])
